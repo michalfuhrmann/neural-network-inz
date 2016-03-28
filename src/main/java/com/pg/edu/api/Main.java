@@ -1,24 +1,17 @@
 package com.pg.edu.api;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
 
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
 
+        logger.info("qweqwe");
 
-        List<String> strings = new ArrayList<>(2);
-
-
-        for (String s : strings) {
-            System.out.println("elo");
-        }
-     }
-
-
-
+    }
 
 
 }

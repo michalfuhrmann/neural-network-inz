@@ -14,11 +14,16 @@ import com.pg.edu.api.dataset.TrainingDataSet;
 import com.pg.edu.api.layer.InputLayer;
 import com.pg.edu.api.layer.NetworkLayer;
 import com.pg.edu.api.layer.OutputLayer;
+import com.pg.edu.api.node.Node;
 import com.pg.edu.impl.layer.InputLayerImpl;
 import com.pg.edu.impl.layer.NetworkLayerImpl;
 import com.pg.edu.impl.layer.OutputLayerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NeuralNetworkImpl implements NeuralNetwork {
+
+    private static Logger LOG = LoggerFactory.getLogger(NeuralNetworkImpl.class);
 
     private final InputLayer inputLayer;
     private final List<NetworkLayer> hiddenLayers;
@@ -29,19 +34,28 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     private NeuralNetworkImpl(LearningAlgorithm learningAlgorithm, int inputSize, int outputSize, int hiddenLayerSize, int hiddenLayers) {
         this.learningAlgorithm = learningAlgorithm;
 
-        this.inputLayer=new InputLayerImpl(inputSize);
+        this.inputLayer = new InputLayerImpl(inputSize);
         this.hiddenLayers = new ArrayList<>();
         IntStream.range(0, hiddenLayers).mapToObj(value -> new NetworkLayerImpl(hiddenLayerSize)).forEach(this.hiddenLayers::add);
-        this.outputLayer=new OutputLayerImpl(outputSize);
+        this.outputLayer = new OutputLayerImpl(outputSize);
+
+        this.hiddenLayers.forEach(hiddenLayer -> connectNodes(inputLayer.getNodes(), hiddenLayer.getNodes()));
+        this.hiddenLayers.forEach(hiddenLayer -> connectNodes(hiddenLayer.getNodes(), outputLayer.getNodes()));
+    }
+
+
+    private void connectNodes(List<Node> firstLayer, List<Node> secondLayer) {
+
+        secondLayer.forEach(secondLayerNode -> firstLayer.forEach(secondLayerNode::connect));
     }
 
     @Override
     public void train(TrainingDataSet dataSet) {
 
-        dataSet.getData().forEach(this::trainOneData);
+        dataSet.getData().forEach(this::trainSingleData);
     }
 
-    private void trainOneData(TrainingData trainingData) {
+    private void trainSingleData(TrainingData trainingData) {
 
         //TODO split trainingData arguments into input/otuput and pass it
         feedForward(trainingData);
@@ -50,14 +64,19 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     }
 
     //delegate these methods to algorithm
-    private void feedForward(TrainingData trainingData) {
-        outputLayer.feedForward(trainingData);
+    private ResultData feedForward(TrainingData trainingData) {
 
+        inputLayer.setInputs(trainingData);
+        ResultData resultData = outputLayer.feedForward();
+
+        return resultData;
     }
+
     private ErrorData calculateError(TrainingData trainingData) {
         return outputLayer.calculateError(trainingData);
 
     }
+
     private void updateWeights(ErrorData errorData) {
         inputLayer.updateWeights(errorData);
     }
@@ -66,49 +85,49 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     public ErrorDataSet validate(TrainingDataSet dataSet) {
 
         List<ErrorData> errorDatas = new ArrayList<>();
-        for(TrainingData trainingData : dataSet.getData()) {
+        for (TrainingData trainingData : dataSet.getData()) {
+            ResultData output = feedForward(trainingData);
 
-            feedForward(trainingData);
-            ErrorData errorData = calculateError(trainingData, outputLayer.getResult());
+            ErrorData errorData = calculateError(trainingData, output);
             errorDatas.add(errorData);
 
         }
         //TODO temp solution  ;)
-        return new ErrorDataSet() {
-            @Override
-            public List<ErrorData> getData() {
-                return errorDatas;
-            }
-        };
+        return () -> errorDatas;
 
     }
 
-    ErrorData calculateError(TrainingData trainingData,ResultData resultData) {
+    ErrorData calculateError(TrainingData trainingData, ResultData resultData) {
         throw new IllegalStateException("not yet implemento");
     }
 
 
     @Override
     public ResultData compute(TrainingData trainingData) {
-
-        feedForward(trainingData);
-        return outputLayer.getResult();
+        ResultData resultData = feedForward(trainingData);
+        return resultData;
     }
 
 
-    class NeuralNetworkBuilder{
+    public static NeuralNetworkBuilder builder() {
+        return new NeuralNetworkBuilder();
+    }
+
+    public static class NeuralNetworkBuilder {
         private LearningAlgorithm learningAlgorithm;
         private int inputSize;
         private int outputSize;
         private int hiddenLayerSize;
         private int hiddenLayers;
 
-        public void setHiddenLayers(int hiddenLayers) {
-            this.hiddenLayers = hiddenLayers;
-        }
 
         public LearningAlgorithm getLearningAlgorithm() {
             return learningAlgorithm;
+        }
+
+        public NeuralNetworkBuilder setHiddenLayers(int hiddenLayers) {
+            this.hiddenLayers = hiddenLayers;
+            return this;
         }
 
         public NeuralNetworkBuilder setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {

@@ -1,9 +1,13 @@
 package com.pg.edu.api.node;
 
-public interface Node {
+import com.pg.edu.api.nodeconnector.NodeConnector;
 
+public interface Node {
 
     void setValue(double value);
 
+    Double getValue();
+
+    NodeConnector connect(Node otherNode);
 
 }

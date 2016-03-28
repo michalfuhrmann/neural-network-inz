@@ -4,13 +4,12 @@ import com.pg.edu.api.node.Node;
 
 import java.util.List;
 
-public class NodeConnector {
+public interface NodeConnector {
 
-    List<Node> getParentNodes;
+    Node getParentNode();
 
-    List<Node> getChildrenNodes;
+    Node getChildrenNode();
 
-
-
+    Double getWeight();
 
 }
