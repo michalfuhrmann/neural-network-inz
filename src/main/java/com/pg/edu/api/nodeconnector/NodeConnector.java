@@ -12,4 +12,7 @@ public interface NodeConnector {
 
     Double getWeight();
 
+    void updateWeight();
+
+
 }

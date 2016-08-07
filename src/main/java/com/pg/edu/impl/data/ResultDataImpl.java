@@ -14,7 +14,7 @@ public class ResultDataImpl implements ResultData {
         this.data = data;
     }
 
-    public List<Double> getData() {
+    public List<Double> getResults() {
         return data;
     }
 }

@@ -1,6 +1,13 @@
 package com.pg.edu.api.data;
 
+import java.util.List;
+
 public interface ErrorData extends Data{
 
-    Integer getError();
+    List<Double> getErrorValues();
+
+    //TODO add option to choose THRESHOLD or HIGHEST_VALUE
+    int getNumberOfCorrectAnwsers();
+
+
 }

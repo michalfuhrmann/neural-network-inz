@@ -1,15 +1,15 @@
 package com.pg.edu.impl.data;
 
-import com.pg.edu.api.data.TrainingData;
+import com.pg.edu.api.data.LearningData;
 
 import java.util.List;
 
-public class TrainingDataImpl implements TrainingData {
+public class LearningDataImpl implements LearningData {
 
     private final List<Double> inputs;
     private final List<Double> outputs;
 
-    public TrainingDataImpl(List<Double> inputs, List<Double> outputs) {
+    public LearningDataImpl(List<Double> inputs, List<Double> outputs) {
         this.inputs = inputs;
         this.outputs = outputs;
     }

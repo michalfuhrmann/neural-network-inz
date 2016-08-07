@@ -1,12 +1,12 @@
 package com.pg.edu.api.layer;
 
 import com.pg.edu.api.data.ErrorData;
-import com.pg.edu.api.data.TrainingData;
+import com.pg.edu.api.data.LearningData;
 
 public interface InputLayer extends NetworkLayer {
 
-    void updateWeights(ErrorData errorData);
+    void setInputs(LearningData learningData);
 
-    void setInputs(TrainingData trainingData);
+    ErrorData calculateError();
 
 }

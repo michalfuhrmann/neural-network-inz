@@ -2,14 +2,14 @@ package com.pg.edu.impl.layer;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.pg.edu.api.data.ErrorData;
+import com.google.common.base.Preconditions;
 import com.pg.edu.api.data.ResultData;
-import com.pg.edu.api.data.TrainingData;
+import com.pg.edu.api.data.LearningData;
 import com.pg.edu.api.layer.OutputLayer;
 import com.pg.edu.api.node.Node;
+import com.pg.edu.api.nodeconnector.NodeConnector;
 import com.pg.edu.impl.data.ResultDataImpl;
 import com.pg.edu.impl.node.NodeImpl;
 
@@ -29,10 +29,12 @@ public class OutputLayerImpl implements OutputLayer {
 
         IntStream.range(0, size).mapToObj(value -> new NodeImpl()).forEach(nodes::add);
     }
-    @Override
-    public ErrorData calculateError(TrainingData trainingData) {
 
-        return null;
+    @Override
+    public void updateWeights( ) {
+        nodes.forEach(node -> node.getParentConnectors().forEach(NodeConnector::updateWeight));
+
+
     }
 
     @Override
@@ -41,14 +43,19 @@ public class OutputLayerImpl implements OutputLayer {
         List<Double> result = nodes.stream().map(Node::getValue).collect(toList());
         return new ResultDataImpl(result);
 
-        //TODO ??
+    }
 
+    @Override
+    public void setExpectedData(LearningData learningData) {
+        Preconditions.checkState(learningData.getOutputs().size() == nodes.size());
 
+        for(int i = 0; i< learningData.getOutputs().size(); i++) {
+            nodes.get(i).setExpectedOutput(learningData.getOutputs().get(i));
+        }
     }
 
     @Override
     public List<Node> getNodes() {
         return nodes;
-
     }
 }

@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface ResultData extends Data {
 
-    List<Double> getData();
+    List<Double> getResults();
 
 }

@@ -2,18 +2,19 @@ package com.pg.edu.impl.layer;
 
 import com.pg.edu.api.layer.NetworkLayer;
 import com.pg.edu.api.node.Node;
+import com.pg.edu.api.nodeconnector.NodeConnector;
 import com.pg.edu.impl.node.NodeImpl;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class NetworkLayerImpl implements NetworkLayer {
+public class HiddenLayer implements NetworkLayer {
 
     private final int size;
     private final List<Node> nodes;
 
-    public NetworkLayerImpl(int size) {
+    public HiddenLayer(int size) {
         this.size = size;
         this.nodes = new LinkedList<>();
         initNodes();
@@ -27,5 +28,12 @@ public class NetworkLayerImpl implements NetworkLayer {
     @Override
     public List<Node> getNodes() {
         return nodes;
+    }
+
+
+    //TODO extract to abstract layer class ?
+    @Override
+    public void updateWeights() {
+        nodes.forEach(node -> node.getParentConnectors().forEach(NodeConnector::updateWeight));
     }
 }
